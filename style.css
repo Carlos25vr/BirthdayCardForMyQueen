@@ -26,7 +26,9 @@
 
 html, body {
     height: 100%; 
-    overflow: hidden; /* Evita cualquier scrollbar en el documento */
+    /* ✅ Solución Scroll: Aunque body tiene overflow: hidden, 
+       eliminar los márgenes asegura que 100vh se respete. */
+    overflow: hidden; 
 }
 
 body {
@@ -36,25 +38,39 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding: 20px;
+    /* ✅ Solución Scroll: Elimina el padding del body que puede causar scrollbar en 100vh */
+    padding: 0; 
 }
 
 .birthday-card {
-    text-align: center;
-    width: 90%;
-    max-width: none; 
-
-    background: rgba(255, 255, 255, 0.9);
+    /* ... (Propiedades de width y position se mantienen) ... */
+    width: 90%; 
+    position: relative; 
+    
+    /* 2. Control del Alto para Responsividad */
+    min-height: 500px; 
+    
+    /* Mantenemos 75vh para el margen vertical del 25% */
+    max-height: 75vh; 
+    
+    /* Mantenemos 3/4 (Verticalidad equilibrada) */
+    aspect-ratio: 3/4; 
+    
+    object-fit: contain; 
+    overflow: hidden; 
+    
+    /* 3. Estilos Visuales */
+    background: rgba(255, 255, 255, 0.9); 
     padding: 25px;
     border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-    position: relative; 
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); 
+
+    /* 4. Centrado y Distribución de Contenido (Flexbox) */
     display: flex; 
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    min-height: 500px; 
-    overflow: hidden; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
 }
 
 /* **CLAVE: Nuevo contenedor para los mensajes iniciales** */
@@ -256,30 +272,44 @@ body {
     padding: 0 10px; 
 }
 
-.message {
-    font-family: 'Pacifico', cursive;
-    color: var(--texto-oscuro);
-    font-size: 1.5em;
-    line-height: 1.3;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-    width: 90%; 
-    max-width: 500px; 
-}
-
-/* 5. Diseño de la Foto (Novia) */
-/* Contenedor para la imagen (recuadro azul) */
-.image-container {
+/* Contenedor para la frase (recuadro rojo) */
+.message-container {
     width: 100%;
-    flex-grow: 1; 
+    /* Permite que el contenedor no se comprima */
+    flex-shrink: 0; 
+    height: auto; 
+    /* ✅ Solución Tamaño Imagen: Eliminar el max-height: 30% 
+       Permite que el mensaje tome SOLO la altura necesaria, dejando más espacio para la imagen (flex-grow: 1). */
+    max-height: none; 
     display: flex; 
     justify-content: center;
     align-items: center;
+    padding: 0 10px; 
+}
+
+/* 2. Contenedor de la Imagen (Permite que crezca y centra) */
+.image-container {
+    width: 100%;
+    /* Permite que el contenedor de la imagen ocupe todo el espacio vertical restante */
+    flex-grow: 1; 
+    display: flex; 
+    /* Centra la imagen horizontal y verticalmente en el espacio restante */
+    justify-content: center;
+    align-items: center; 
     padding: 10px; 
 }
 
+/* 3. Diseño de la Foto (Novia) - MODIFICADO para ser MÁS GRANDE y SEGURO */
 .novia-photo {
-    width: 800px; 
-    height: 800px;
+    /* 💥 SOLUCIÓN Tamaño Imagen: Usamos % del ancho de la tarjeta para definir el tamaño.
+       Esto la hace grande, cuadrada, y evita desbordamiento. */
+    width: 85%; 
+    height: auto; /* Dejar que el aspect-ratio defina el alto. */
+    
+    /* Mantiene las restricciones máximas de forma responsiva */
+    max-width: 95%; 
+    max-height: 95%; 
+    
     object-fit: contain; 
     border-radius: 0; 
     border: none; 
@@ -287,15 +317,13 @@ body {
     transition: transform 0.3s ease;
     display: block;
     
-    max-width: 100%; 
-    max-height: 100%; 
+    /* Asegura la forma cuadrada */
     aspect-ratio: 1 / 1; 
 }
 
 .novia-photo:hover {
     transform: scale(1.01); 
 }
-
 /* 6. Animación del Confeti */
 .confetti-container {
     position: absolute;
@@ -348,11 +376,13 @@ body {
         padding: 15px;
     }
     .message-container {
+        /* Se mantiene una ligera restricción en mobile para dar prioridad al scroll si el texto es excesivo */
         max-height: 25%; 
     }
     .message { font-size: 1.3em; }
     .novia-photo {
-        width: 90vw; 
+        /* 💥 SOLUCIÓN: Usar % en lugar de vw para que la imagen se restrinja al ancho de la tarjeta (95% en este media query) */
+        width: 90%; 
         height: auto; 
         max-width: 350px; 
         max-height: 350px;
