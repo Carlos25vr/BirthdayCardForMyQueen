@@ -1,0 +1,361 @@
+/* Importar fuentes de Google Fonts (añadido en HTML) */
+/* font-family: 'Pacifico', cursive; (para títulos y mensaje especial) */
+/* font-family: 'Quicksand', sans-serif; (para el resto del texto) */
+
+/* Colores Pastel con Profundidad y más saturación */
+:root {
+    --rosa-principal: #FFC0CB; /* Rosa Chicle más vibrante */
+    --rosa-sombra: #E0AAB6;    /* Rosa más oscuro para sombras */
+    --fondo-degradado-inicio: #fce4ec; /* Rosa muy claro */
+    --fondo-degradado-fin: #e1bee7;    /* Lavanda suave */
+    --verde-agua: #A7DBD8;     /* Contraste suave y fresco */
+    --amarillo-suave: #FFECB3; /* Detalle amarillo para mensaje */
+    --ribbon-color: #f796af; /* Un rosa más intenso para lazo */
+    --texto-oscuro: #5C4B5C; /* Color de texto más definido */
+    /* Nuevos colores para el patrón de puntos */
+    --caja-fondo-puntos: #f9d5e5; /* Fondo más pálido para la caja */
+    --caja-puntos-color: #ffffff; /* Puntos blancos */
+}
+
+/* 1. Estilos Generales y Responsividad */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%; 
+    overflow: hidden; /* Evita cualquier scrollbar en el documento */
+}
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, var(--fondo-degradado-inicio) 0%, var(--fondo-degradado-fin) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.birthday-card {
+    text-align: center;
+    width: 90%;
+    max-width: none; 
+
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    position: relative; 
+    display: flex; 
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 500px; 
+    overflow: hidden; 
+}
+
+/* **CLAVE: Nuevo contenedor para los mensajes iniciales** */
+.initial-messages-wrapper {
+    position: absolute;
+    top: 10%; 
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; 
+    max-width: 400px;
+    z-index: 15; 
+    opacity: 1; 
+    transition: opacity 0.5s ease-out;
+    pointer-events: auto; 
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* **CLAVE: Ocultar los mensajes iniciales al abrir el regalo** */
+#open-gift:checked ~ .initial-messages-wrapper { 
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Estilos de h1 y subtitle DENTRO del wrapper */
+.initial-messages-wrapper h1 { 
+    font-family: 'Pacifico', cursive;
+    color: var(--texto-oscuro);
+    margin-bottom: 5px; 
+    font-size: 2.2em;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    position: static; 
+    transform: none; 
+    width: auto; 
+}
+
+.initial-messages-wrapper .subtitle { 
+    font-family: 'Quicksand', sans-serif;
+    color: #888;
+    font-style: italic;
+    margin-top: 5px; 
+    font-size: 1.1em;
+    position: static; 
+    transform: none; 
+    width: auto; 
+}
+
+
+/* 2. Estilos del Regalo Cerrado (Estado Inicial) */
+.gift-box {
+    display: block; 
+    cursor: pointer;
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 250px;
+    height: 250px;
+    z-index: 10; 
+    perspective: 1000px; 
+    opacity: 1; 
+    transition: opacity 0.6s ease-out 0.3s; 
+    pointer-events: auto; 
+}
+
+/* La caja entera desaparece después de abrirse */
+#open-gift:checked ~ .gift-box { /* **CAMBIO: de '+' a '~' para que funcione con el nuevo orden HTML** */
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Estilo de la caja de regalo con puntos como en la foto */
+.base, .lid {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background-color: var(--caja-fondo-puntos); 
+    background-image: radial-gradient(var(--caja-puntos-color) 10%, transparent 11%);
+    background-size: 25px 25px; 
+    border: 1px solid var(--rosa-sombra);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25); 
+    border-radius: 8px;
+    transition: all 0.6s ease-out;
+}
+
+.base {
+    bottom: 0;
+}
+
+.lid {
+    top: 0;
+    transform-origin: bottom center;
+}
+
+.ribbon-v, .ribbon-h {
+    position: absolute;
+    background: var(--ribbon-color);
+    z-index: 5;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    transition: opacity 0.5s ease-out;
+}
+
+.ribbon-v {
+    width: 25px;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ribbon-h {
+    width: 100%;
+    height: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 3. Animación de Apertura (El truco CSS) */
+/* Estos selectores ahora usan ~ .gift-box porque ya no es hermano adyacente del input, pero si es un hermano general del input*/
+#open-gift:checked ~ .gift-box .lid {
+    transform: translateY(-120px) rotateX(25deg);
+    opacity: 0;
+    z-index: 1;
+}
+
+#open-gift:checked ~ .gift-box .ribbon-v,
+#open-gift:checked ~ .gift-box .ribbon-h {
+    opacity: 0;
+}
+
+#open-gift:checked ~ .gift-box .base {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    opacity: 0; 
+}
+
+/* 4. Contenido Sorpresa (Aparece y se posiciona) */
+/* **NUEVO CONTENEDOR LABEL para la sorpresa** */
+.surprise-reveal-wrapper { 
+    position: absolute; 
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%; 
+    opacity: 0; /* Oculto al inicio */
+    z-index: 2; /* Por debajo del regalo inicial */
+    transition: opacity 1s ease-out 0.6s; /* Aparece DESPUÉS de que la caja desaparezca */
+    pointer-events: none; /* Inactivo hasta que se abre */
+    cursor: pointer; /* Indica que es clickeable para cerrar */
+    
+    display: flex;
+    flex-direction: column; 
+    justify-content: flex-start; 
+    align-items: center; 
+    overflow: hidden; 
+    max-width: 95vw; 
+    max-height: 95vh;
+}
+
+/* **CLAVE: La sorpresa aparece y es clickeable para cerrar** */
+#open-gift:checked ~ .surprise-reveal-wrapper { 
+    opacity: 1;
+    pointer-events: all; /* Activo al abrir y permite cerrar */
+    padding: 20px; 
+    overflow-y: auto; 
+}
+
+/* El div .surprise-reveal interno ahora solo es el contenedor flex */
+.surprise-reveal {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 100%; /* Ocupa todo el espacio de su wrapper */
+}
+
+
+.surprise-content-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; 
+    width: 100%; 
+    flex-grow: 1; 
+    justify-content: center; 
+}
+
+/* Contenedor para la frase (recuadro rojo) */
+.message-container {
+    width: 100%;
+    flex-shrink: 0; 
+    height: auto; 
+    max-height: 30%; /* La frase ocupa un máximo del 30% del espacio vertical disponible */
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px; 
+}
+
+.message {
+    font-family: 'Pacifico', cursive;
+    color: var(--texto-oscuro);
+    font-size: 1.5em;
+    line-height: 1.3;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    width: 90%; 
+    max-width: 500px; 
+}
+
+/* 5. Diseño de la Foto (Novia) */
+/* Contenedor para la imagen (recuadro azul) */
+.image-container {
+    width: 100%;
+    flex-grow: 1; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    padding: 10px; 
+}
+
+.novia-photo {
+    width: 800px; 
+    height: 800px;
+    object-fit: contain; 
+    border-radius: 0; 
+    border: none; 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); 
+    transition: transform 0.3s ease;
+    display: block;
+    
+    max-width: 100%; 
+    max-height: 100%; 
+    aspect-ratio: 1 / 1; 
+}
+
+.novia-photo:hover {
+    transform: scale(1.01); 
+}
+
+/* 6. Animación del Confeti */
+.confetti-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; z-index: 20;
+}
+.confetti {
+    position: absolute; width: 10px; height: 18px; background: var(--verde-agua); opacity: 0; animation: none; border-radius: 2px;
+}
+.confetti:nth-child(even) { background: var(--amarillo-suave); }
+.confetti:nth-child(odd) { background: var(--rosa-principal); }
+
+/* Activación del Confeti al Abrir el Regalo */
+#open-gift:checked ~ .gift-box .confetti { /* **CAMBIO: de '+' a '~' para el confeti** */
+    opacity: 1;
+    animation: fall 3s ease-out forwards;
+}
+
+.confetti:nth-child(1) { left: 10%; animation-delay: 0.1s; transform: rotate(20deg); }
+.confetti:nth-child(2) { left: 30%; animation-delay: 0.5s; transform: rotate(90deg); }
+.confetti:nth-child(3) { left: 50%; animation-delay: 0.3s; transform: rotate(45deg); }
+.confetti:nth-child(4) { left: 70%; animation-delay: 0.7s; transform: rotate(120deg); }
+.confetti:nth-child(5) { left: 90%; animation-delay: 0.2s; transform: rotate(60deg); }
+.confetti:nth-child(6) { left: 20%; animation-delay: 0.6s; transform: rotate(150deg); }
+.confetti:nth-child(7) { left: 40%; animation-delay: 0.4s; transform: rotate(30deg); }
+.confetti:nth-child(8) { left: 60%; animation-delay: 0.8s; transform: rotate(75deg); }
+.confetti:nth-child(9) { left: 80%; animation-delay: 0.0s; transform: rotate(100deg); }
+.confetti:nth-child(10) { left: 5%; animation-delay: 0.9s; transform: rotate(0deg); }
+
+@keyframes fall {
+    0% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* 7. Media Query para Responsive */
+@media (max-width: 768px) { 
+    .birthday-card {
+        padding: 15px;
+        width: 95%;
+        min-height: 450px;
+        max-width: none; 
+    }
+    .initial-messages-wrapper { top: 5%; } 
+    .initial-messages-wrapper h1 { font-size: 1.8em;}
+    .initial-messages-wrapper .subtitle { font-size: 0.9em; }
+
+    .gift-box {
+        width: 200px; height: 200px; 
+    }
+    #open-gift:checked ~ .surprise-reveal-wrapper { 
+        padding: 15px;
+    }
+    .message-container {
+        max-height: 25%; 
+    }
+    .message { font-size: 1.3em; }
+    .novia-photo {
+        width: 90vw; 
+        height: auto; 
+        max-width: 350px; 
+        max-height: 350px;
+        aspect-ratio: 1 / 1; 
+    }
+}
